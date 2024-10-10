@@ -241,35 +241,35 @@ function Install-Tarball([string]$InstallDir, [string]$Version) {
 }
 
 function Set-NodePath {
-    param (
-        [string]$FilePath
-    )
-	$NodePath = "$env:LocalAppData\MetaCall\metacall\runtimes\nodejs\node.exe"
-    if (-not (Test-Path $FilePath)) {
-        Write-Error "The file $FilePath does not exist."
-        return
-    }
-    $content = Get-Content -Path $FilePath
-    $content = $content -replace '%dp0%\\node.exe', $NodePath
-    $content = $content -replace '""', '"'
-    Set-Content -Path $FilePath -Value $content
+	param (
+		[string]$FilePath
+	)
+	$NodePath = "`"$env:LocalAppData\MetaCall\metacall\runtimes\nodejs\node.exe`""
+	if (-not (Test-Path $FilePath)) {
+		Write-Error "The file $FilePath does not exist."
+		return
+	}
+	$content = Get-Content -Path "$FilePath"
+	$content = $content -replace '%dp0%\\node.exe', "$NodePath"
+	$content = $content -replace '""', '"'
+	Set-Content -Path "$FilePath" -Value "$content"
 }
 
 function Install-MetaCall-AdditionalPackages {
-    param (
-        [string]$Component
-    )
-    $InstallRoot = Resolve-Installation-Path $InstallDir
-    $InstallDir = Join-Path -Path $InstallRoot -ChildPath "deps\$Component"
+	param (
+		[string]$Component
+	)
+	$InstallRoot = Resolve-Installation-Path "$InstallDir"
+	$InstallDir = Join-Path -Path "$InstallRoot" -ChildPath "deps\$Component"
 
-    if (-not (Test-Path $InstallDir)) {
-        New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
-    }
+	if (-not (Test-Path $InstallDir)) {
+		New-Item -ItemType Directory -Force -Path "$InstallDir" | Out-Null
+	}
 
-    Write-Host "MetaCall $($Component) Installation"
-    Invoke-Expression "npm install --global --prefix=$InstallDir @metacall/$Component"
-	Set-NodePath  "$InstallDir\metacall-$Component.cmd"
-    Write-Host "MetaCall $Component has been installed."
+	Write-Host "MetaCall $($Component) Installation"
+	Invoke-Expression "npm install --global --prefix=`"$InstallDir`" @metacall/$Component"
+	Set-NodePath "$InstallDir\metacall-$Component.cmd"
+	Write-Host "MetaCall $Component has been installed."
 }
 
 # Install the tarball and post scripts
