@@ -244,7 +244,7 @@ function Set-NodePath {
 	param (
 		[string]$FilePath
 	)
-	$NodePath = "`"$env:LocalAppData\MetaCall\metacall\runtimes\nodejs\node.exe`""
+	$NodePath = "$env:LocalAppData\MetaCall\metacall\runtimes\nodejs\node.exe"
 	if (-not (Test-Path $FilePath)) {
 		Write-Error "The file $FilePath does not exist."
 		return
