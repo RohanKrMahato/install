@@ -78,8 +78,8 @@ jobs:
       - name: Install Metacall
         shell: cmd
         run: |
-          setx "METACALL_INSTALL_DIR=%cd%/install folder with spaces"
-          poweshell -NoProfile -ExecutionPolicy unrestricted ./install.ps1
+          setx "METACALL_INSTALL_DIR=%cd%\install folder with spaces"
+          powershell -NoProfile -ExecutionPolicy unrestricted ./install.ps1
       - name: NodeJS Test
         shell: cmd
         run: |
@@ -99,4 +99,4 @@ jobs:
           IF %ERRORLEVEL% NEQ 0 exit /B 1
           metacall faas --version | findstr /R "^v.*\..*\..*"
           IF %ERRORLEVEL% NEQ 0 exit /B 1
-
+          
