@@ -78,8 +78,7 @@ jobs:
       - name: Install Metacall
         shell: cmd
         run: |
-          set METACALL_INSTALL_DIR="%cd%\install folder with spaces"
-          echo %METACALL_INSTALL_DIR%
+          setx METACALL_INSTALL_DIR "%cd%\install folder with spaces"
           powershell -NoProfile -ExecutionPolicy unrestricted ./install.ps1
       - name: NodeJS Test
         shell: cmd
