@@ -74,11 +74,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Create install folder
         shell: cmd
-        run: mkdir "kumar rohan mahato"
+        run: mkdir "install folder with spaces"
       - name: Install Metacall
         shell: cmd
         run: |
-          powershell -NoProfile -ExecutionPolicy unrestricted ./install.ps1 -FromPath .\install.ps1 -InstallDir "kumar rohan mahato"
+          setx METACALL_INSTALL_DIR "%cd%\install folder with spaces"
+          powershell -NoProfile -ExecutionPolicy unrestricted ./install.ps1
       - name: NodeJS Test
         shell: cmd
         run: |
@@ -98,3 +99,4 @@ jobs:
           IF %ERRORLEVEL% NEQ 0 exit /B 1
           metacall faas --version | findstr /R "^v.*\..*\..*"
           IF %ERRORLEVEL% NEQ 0 exit /B 1
+          
