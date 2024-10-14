@@ -78,7 +78,6 @@ jobs:
       - name: Install Metacall
         shell: pwsh
         run: |
-          Set-Location "mahato kumar rohan"
           ./install.ps1 -InstallDir "$pwd\mahato kumar rohan"
       - name: NodeJS Test
         shell: cmd
