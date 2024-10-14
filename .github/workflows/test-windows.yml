@@ -74,12 +74,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Create install folder
         shell: cmd
-        run: mkdir "install folder with spaces"
+        run: mkdir "mahato kumar rohan"
       - name: Install Metacall
-        shell: cmd
+        shell: pwsh
         run: |
-          setx METACALL_INSTALL_DIR "%cd%\install folder with spaces"
-          powershell -NoProfile -ExecutionPolicy unrestricted ./install.ps1
+          Set-Location "mahato kumar rohan"
+          ./install.ps1 -InstallDir "$pwd\mahato kumar rohan"
       - name: NodeJS Test
         shell: cmd
         run: |
