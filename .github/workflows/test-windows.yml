@@ -78,7 +78,7 @@ jobs:
       - name: Install Metacall
         shell: pwsh
         run: |
-          ./install.ps1 -InstallDir "$pwd\mahato kumar rohan"
+          powershell -NoProfile -ExecutionPolicy Bypass -File ./install.ps1 -InstallDir "$pwd\mahato kumar rohan"
       - name: NodeJS Test
         shell: cmd
         run: |
