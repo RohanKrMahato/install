@@ -78,7 +78,7 @@ jobs:
       - name: Install Metacall
         shell: cmd
         run: |
-          powershell -NoProfile -ExecutionPolicy unrestricted ./install.ps1 -InstallDir '%cd%\install folder with spaces'
+          powershell -NoProfile -ExecutionPolicy unrestricted ./install.ps1 -InstallDir "$PWD\install folder with spaces"
       - name: NodeJS Test
         shell: cmd
         run: |
