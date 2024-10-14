@@ -72,17 +72,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Create temporary install folder
+      - name: Create install folder
         shell: cmd
-        run: mkdir "temp_install_dir"
+        run: mkdir "kumar rohan mahato"
       - name: Install Metacall
-        shell: pwsh
-        run: |
-          Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile", "-ExecutionPolicy", "Unrestricted", "-File", "./install.ps1", "-FromPath", ".\install.ps1", "-InstallDir", "temp_install_dir" -Wait -NoNewWindow
-      - name: Move Installation
         shell: cmd
         run: |
-          move "temp_install_dir" "kumar rohan mahato"
+          powershell -NoProfile -ExecutionPolicy unrestricted ./install.ps1 -FromPath .\install.ps1 -InstallDir "kumar rohan mahato"
       - name: NodeJS Test
         shell: cmd
         run: |
