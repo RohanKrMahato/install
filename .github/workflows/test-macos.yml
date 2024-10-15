@@ -1,10 +1,14 @@
-name: Install Metacall on MacOs Test
+name: Install MetaCall on MacOs Test
 
 on: [push, pull_request, workflow_dispatch]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   install-default:
-    name: Install Metacall via Default Installation
+    name: Install MetaCall via Default Installation
     strategy:
       fail-fast: false
       matrix:
@@ -12,9 +16,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install Metacall
+      - name: Install MetaCall
         env:
-          INSTALL_DEBUG: 1
+          METACALL_INSTALL_DEBUG: 1
         run: ./install.sh
 
       - name: NodeJS Test
@@ -29,7 +33,7 @@ jobs:
           metacall faas --version | grep -E "^v.*\..*\..*"
 
   install-from-path:
-    name: Install Metacall via Path Installation
+    name: Install MetaCall via Path Installation
     strategy:
       fail-fast: false
       matrix:
@@ -37,7 +41,7 @@ jobs:
           {os: macos-13, arch: amd64},
           {os: macos-14, arch: arm64}
         ]
-        package: [tgz, pkg]
+        package: [tar.gz] # [tar.gz, pkg] # TODO: pkg
     runs-on: ${{ matrix.triplet.os }}
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +55,7 @@ jobs:
 
       - name: Install MetaCall
         env:
-          INSTALL_DEBUG: 1
+          METACALL_INSTALL_DEBUG: 1
         run: ./install.sh --from-path ./metacall-tarball-macos.${{ matrix.package }}
 
       - name: NodeJS Test

@@ -42,7 +42,7 @@ FROM ${METACALL_INSTALL_CERTS} AS certificates
 # Debian Base (root)
 FROM debian:bookworm-slim AS debian_root
 
-ENV INSTALL_DEBUG=1
+ENV METACALL_INSTALL_DEBUG=1
 
 COPY --from=certificates /etc/ssl/certs/ /etc/ssl/certs/
 
@@ -58,7 +58,7 @@ RUN apt-get update \
 	&& usermod -aG sudo user \
 	&& echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
 	&& chown -R user /test \
-	&& chmod -R 500 /test/*
+	&& chmod -R 700 /test
 
 # Debian Base (user)
 FROM debian_root AS debian_user
@@ -105,6 +105,23 @@ RUN curl -sL https://raw.githubusercontent.com/metacall/install/master/install.s
 	&& metacall deploy --version | grep -e '^v.*\..*\..*' \
 	&& metacall faas --version | grep -e '^v.*\..*\..*'
 
+# # Test uninstall Debian without root and curl, checking if it preserves existing files
+# FROM debian_user AS test_debian_user_curl_uninstall
+
+# RUN mkdir -p /gnu \
+# 	&& curl -sL https://raw.githubusercontent.com/metacall/install/master/install.sh | bash \
+# 	&& metacall /test/script.js | grep '123456' \
+# 	&& curl -sL https://raw.githubusercontent.com/metacall/install/master/install.sh
+# 	| bash -s -- --uninstall \
+# 	| grep 'MetaCall has been successfully uninstalled' \
+# 	&& [ "$(command -v metacall || echo '1')" = "1" ] \
+# 	&& [ -d /gnu ]
+
+# # TODO:
+# # Create a test that has a /gnu folder, then install metacall, then update the mtime of a random file
+# # from metacall installation, then uninstall and then verify that /gnu and the random file that has been
+# # update are still present after the uninstall process
+
 # Test certificates in Debian with user (comparing against <!doctype html> in buffer format)
 FROM test_debian_user_curl AS test_debian_user_certificates
 
@@ -134,6 +151,14 @@ FROM test_debian_user_wget AS test_debian_user_pip
 RUN metacall pip3 install -r /test/requirements.txt \
 	&& metacall /test/requirements.py | grep '123456'
 
+# Test npm installation
+FROM test_debian_user_wget AS test_debian_user_npm
+
+WORKDIR /test
+
+RUN metacall npm install \
+	&& metacall /test/package.js | grep 'eyJhbGciOiJIUzI1NiJ9.eWVldA.bS3dTiCfusUIIqeH3484ByiBZC_cH0y8G5vonpPdqXA'
+
 # Test PYTHONPATH
 FROM test_debian_user_wget AS test_debian_user_pythonpath
 
@@ -142,7 +167,7 @@ RUN metacall /test/async.py | grep 'Async Done'
 # Fedora Base (root)
 FROM fedora:latest AS fedora_root
 
-ENV INSTALL_DEBUG=1
+ENV METACALL_INSTALL_DEBUG=1
 
 COPY --from=certificates /etc/ssl/certs/ /etc/pki/ca-trust/source/anchors/
 
@@ -158,7 +183,7 @@ RUN dnf update -y \
 	&& usermod -aG wheel user \
 	&& echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
 	&& chown -R user /test \
-	&& chmod -R 500 /test/*
+	&& chmod -R 700 /test
 
 # Fedora Base (user)
 FROM fedora_root AS fedora_user
@@ -198,7 +223,7 @@ RUN wget -O - https://raw.githubusercontent.com/metacall/install/master/install.
 # Alpine Base (root)
 FROM alpine:latest AS alpine_root
 
-ENV INSTALL_DEBUG=1
+ENV METACALL_INSTALL_DEBUG=1
 
 COPY --from=certificates /etc/ssl/certs/ /etc/ssl/certs/
 
@@ -213,7 +238,7 @@ RUN apk update \
 	&& adduser --disabled-password --gecos "" user \
 	&& echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
 	&& chown -R user /test \
-	&& chmod -R 500 /test/*
+	&& chmod -R 700 /test
 
 # Alpine Base (user)
 FROM alpine_root AS alpine_user
@@ -264,12 +289,13 @@ FROM test_alpine_user_wget AS test_alpine_user_wget_uninstall
 
 RUN wget -O - https://raw.githubusercontent.com/metacall/install/master/install.sh \
 	| sh -s -- --uninstall \
-	| grep 'MetaCall has been successfully uninstalled'
+	| grep 'MetaCall has been successfully uninstalled' \
+	&& [ "$(command -v metacall || echo '1')" = "1" ]
 
 # BusyBox Base
 FROM busybox:stable-uclibc AS test_busybox
 
-ENV INSTALL_DEBUG=1
+ENV METACALL_INSTALL_DEBUG=1
 
 # Busybox wget fails with self signed certificates so we avoid the tests
 FROM test_busybox AS busybox_fail_certificates_local

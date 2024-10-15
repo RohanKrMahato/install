@@ -1,6 +1,10 @@
-name: Install Metacall on Linux Test
+name: Install MetaCall on Linux Test
 
 on: [push, pull_request, workflow_dispatch]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   trigger-cli-build:
@@ -21,7 +25,7 @@ jobs:
           ref: master
 
   install-local:
-    name: Install Metacall via Default Installation (local)
+    name: Install MetaCall via Default Installation (local)
     runs-on: ubuntu-latest
     if: always()
     needs: trigger-cli-build
@@ -31,7 +35,7 @@ jobs:
         run: ./test.sh
 
   install-remote:
-    name: Install Metacall via Default Installation (remote)
+    name: Install MetaCall via Default Installation (remote)
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     needs: trigger-cli-build
